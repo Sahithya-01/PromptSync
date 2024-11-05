@@ -2,9 +2,13 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+interface RoomSelectionProps {
+  username: string | null
+}
+
 const generateRoomId = () => Math.random().toString(36).substr(2, 9)
 
-const RoomSelection: React.FC = () => {
+const RoomSelection: React.FC<RoomSelectionProps> = ({ username }) => {
   const [roomId, setRoomId] = useState<string>('')
   const [generatedRoomId, setGeneratedRoomId] = useState<string | null>(null)
   const navigate = useNavigate()
@@ -24,7 +28,7 @@ const RoomSelection: React.FC = () => {
 
   const handleJoinRoom = () => {
     if (roomId) {
-      navigate(`/editor/${roomId}`) // Redirect to editor with roomId
+      navigate(`/editor/${roomId}`, { state: { username } }) // Pass username as state
     } else {
       alert('Please enter a room ID to join')
     }

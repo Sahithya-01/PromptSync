@@ -1,4 +1,5 @@
 // src/Editor.tsx
+
 import { CollaborationPlugin } from '@lexical/react/LexicalCollaborationPlugin'
 import { LexicalComposer } from '@lexical/react/LexicalComposer'
 import { ContentEditable } from '@lexical/react/LexicalContentEditable'
@@ -7,7 +8,7 @@ import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin'
 import { Provider } from '@lexical/yjs'
 import { $createParagraphNode, $createTextNode, $getRoot } from 'lexical'
 import React from 'react'
-import { useParams } from 'react-router-dom'
+import { useLocation, useParams } from 'react-router-dom'
 import { WebsocketProvider } from 'y-websocket'
 import * as Y from 'yjs'
 
@@ -15,7 +16,11 @@ import ExampleTheme from './ExampleTheme'
 import PubNub from './PubNub'
 import ToolbarPlugin from './plugins/ToolbarPlugin'
 
-// Editor configuration
+interface EditorProps {
+  username: string | null
+}
+
+// Editor configuration for Lexical
 const editorConfig = {
   editorState: null,
   namespace: 'Sahithya',
@@ -25,6 +30,7 @@ const editorConfig = {
   theme: ExampleTheme,
 }
 
+// PubNub configuration for WebSocket collaboration
 const pubnubConfig = {
   endpoint: import.meta.env.VITE_PUBNUB_ENDPOINT || '',
   channel: '',
@@ -35,7 +41,7 @@ const pubnubConfig = {
   subscribeKey: import.meta.env.VITE_PUBNUB_SUBSCRIBE_KEY || '',
 }
 
-// Initialize editor state
+// Initialize editor state with a default paragraph
 function initialEditorState(): void {
   const root = $getRoot()
   const paragraph = $createParagraphNode()
@@ -44,8 +50,10 @@ function initialEditorState(): void {
   root.append(paragraph)
 }
 
-const Editor: React.FC = () => {
+const Editor: React.FC<EditorProps> = () => {
   const { roomId } = useParams<{ roomId: string }>()
+  const location = useLocation()
+  const username = location.state?.username || 'Anonymous' // Default to 'Anonymous' if no username
 
   return (
     <LexicalComposer initialConfig={editorConfig}>
@@ -54,16 +62,17 @@ const Editor: React.FC = () => {
         <div id="yjs-collaboration-plugin-container" className="editor-inner">
           <RichTextPlugin
             contentEditable={<ContentEditable className="editor-input" />}
-            placeholder={<span></span>}
+            placeholder={<span>Start typing...</span>}
             ErrorBoundary={LexicalErrorBoundary}
           />
           <CollaborationPlugin
+            username={username} // Use the username as the collaborator name
             providerFactory={(id, yjsDocMap) => {
               const doc = new Y.Doc()
               yjsDocMap.set(id, doc)
               const provider = new WebsocketProvider(
                 pubnubConfig.endpoint,
-                roomId || 'default-room',
+                roomId || 'default-room', // Use roomId for unique rooms
                 doc,
                 {
                   WebSocketPolyfill: PubNub as unknown as typeof WebSocket,

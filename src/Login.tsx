@@ -1,11 +1,11 @@
-// src/Login.tsx
 import React, { useState } from 'react'
 import { signInWithEmailAndPassword, User } from 'firebase/auth'
 import { Link, useNavigate } from 'react-router-dom'
-import { auth } from './firebase'
+import { auth, db } from './firebase' // Import Firestore
+import { doc, getDoc } from 'firebase/firestore'
 
 interface LoginProps {
-  onLogin: (user: User) => void
+  onLogin: (user: User, username: string) => void
 }
 
 const Login: React.FC<LoginProps> = ({ onLogin }) => {
@@ -21,7 +21,13 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
         email,
         password
       )
-      onLogin(userCredential.user)
+      const user = userCredential.user
+
+      // Retrieve username from Firestore
+      const userDoc = await getDoc(doc(db, 'users', user.uid))
+      const username = userDoc.exists() ? userDoc.data().username : 'Unknown'
+
+      onLogin(user, username)
       navigate('/rooms') // Redirect to Room Selection page after login
     } catch (error) {
       console.error('Login error:', error)
@@ -37,12 +43,14 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          required
         />
         <input
           type="password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          required
         />
         <button type="submit">Login</button>
       </form>
