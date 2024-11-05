@@ -1,0 +1,34 @@
+{
+  "name": "lexical-pubnub",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build && mv dist/icons dist/assets/.",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@lexical/react": "^0.14.2",
+    "@mui/icons-material": "^6.1.6",
+    "@mui/material": "^6.1.6",
+    "firebase": "^11.0.1",
+    "lexical": "^0.14.2",
+    "react": "^18.2.0",
+    "react-color": "^2.19.3",
+    "react-dom": "^18.2.0",
+    "react-router-dom": "^6.27.0",
+    "y-websocket": "^2.0.2"
+  },
+  "devDependencies": {
+    "@types/lodash.debounce": "^4.0.9",
+    "@types/react": "^18.2.59",
+    "@types/react-color": "^3.0.12",
+    "@types/react-dom": "^18.2.19",
+    "@vitejs/plugin-react": "^4.2.1",
+    "typescript": "^5.2.2",
+    "vite": "^5.1.4"
+  }
+}
