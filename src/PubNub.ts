@@ -99,12 +99,34 @@ export default class PubNub {
       this.pubnub = PUBNUB(this.setup)
       this.pubnub.setup = this.setup
 
-      // Fetch Document
-      this.pubnub.history().then((messages: Array<Array<any>>) => {
-        messages[0].forEach((message: string) => {
-          this.messageReceiver(message)
+      this.pubnub
+        .history()
+        .then((messages: any) => {
+          if (Array.isArray(messages) && Array.isArray(messages[0])) {
+            const [messageArray] = messages
+            if (Array.isArray(messageArray)) {
+              messageArray.forEach((message: string) => {
+                this.messageReceiver(message)
+              })
+            } else {
+              console.error(
+                'Expected messages[0] to be an array but got:',
+                messageArray
+              )
+            }
+          } else {
+            console.error(
+              'Unexpected response format from PubNub history API. Expected nested arrays. Full Response:',
+              messages
+            )
+            console.warn(
+              'No history retrieved; proceeding with an empty message array.'
+            )
+          }
         })
-      })
+        .catch((error: unknown) => {
+          console.error('Error fetching history from PubNub:', error)
+        })
 
       // Stream Changes
       this.pubnub.subscribe({
@@ -145,6 +167,8 @@ export default class PubNub {
     this.onclose({})
   }
 }
+
+// Additional utility functions remain unchanged...
 
 // HTTP/3 and IPv6 PubNub Connectivity
 type Setup = {
