@@ -4,16 +4,18 @@ import { ContentEditable } from '@lexical/react/LexicalContentEditable'
 import LexicalErrorBoundary from '@lexical/react/LexicalErrorBoundary'
 import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin'
 import { Provider } from '@lexical/yjs'
-import { $createParagraphNode, $getRoot, LexicalEditor } from 'lexical'
+import { $createParagraphNode, $getRoot } from 'lexical'
 import React, { useState } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 import { WebsocketProvider } from 'y-websocket'
 import * as Y from 'yjs'
 
+import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext'
 import ExampleTheme from './ExampleTheme'
 import NlpFeatures from './NlpFeatures'
 import PubNub from './PubNub'
 import ToolbarPlugin from './plugins/ToolbarPlugin'
+import TreeViewPlugin from './plugins/TreeViewPlugin'
 
 interface EditorProps {
   username: string | null
@@ -44,6 +46,24 @@ function initialEditorState(): void {
   root.append(paragraph)
 }
 
+// CaptureTextButton Component to get editor text content
+const CaptureTextButton: React.FC<{ onTextChange: (text: string) => void }> = ({
+  onTextChange,
+}) => {
+  const [editor] = useLexicalComposerContext()
+
+  const handleCaptureText = () => {
+    editor.getEditorState().read(() => {
+      const root = $getRoot()
+      const textContent = root.getTextContent()
+      onTextChange(textContent) // Pass text content back to parent component
+      console.log('Current Editor Text:', textContent)
+    })
+  }
+
+  return <button onClick={handleCaptureText}>Get Editor Text</button>
+}
+
 const Editor: React.FC<EditorProps> = () => {
   const { roomId } = useParams<{ roomId: string }>()
   const location = useLocation()
@@ -51,16 +71,6 @@ const Editor: React.FC<EditorProps> = () => {
 
   const [nlpResult, setNlpResult] = useState<string>('')
   const [editorText, setEditorText] = useState<string>('')
-
-  // Capture the editor text whenever it updates
-  const captureEditorText = (editor: LexicalEditor) => {
-    editor.getEditorState().read(() => {
-      const root = $getRoot()
-      const textContent = root.getTextContent() // Get all text content in the editor
-      setEditorText(textContent)
-    })
-  }
-  // console.log('the text is ', captureEditorText)
 
   return (
     <div className="editor-page">
@@ -101,7 +111,9 @@ const Editor: React.FC<EditorProps> = () => {
               initialEditorState={initialEditorState}
               shouldBootstrap={false}
             />
+            {/* <TreeViewPlugin /> */}
           </div>
+          <CaptureTextButton onTextChange={setEditorText} />
         </div>
 
         {/* NLP Features Section */}
