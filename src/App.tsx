@@ -1,16 +1,11 @@
 import { User } from 'firebase/auth'
-import { useEffect, useState, createContext, useContext } from 'react'
-import {
-  Navigate,
-  Route,
-  BrowserRouter as Router,
-  Routes,
-} from 'react-router-dom'
+import { createContext, useContext, useEffect, useState } from 'react'
+import { Route, BrowserRouter as Router, Routes } from 'react-router-dom'
 import Editor from './Editor'
+import LandingPage from './LandingPage'
 import Login from './Login'
 import Register from './Register'
 import RoomSelection from './RoomSelection'
-import LandingPage from './LandingPage'
 import { auth } from './firebase' // Import your Firebase auth instance
 
 // Define context for user state
@@ -61,13 +56,13 @@ const useAuth = () => {
   return context
 }
 
-// Protected route wrapper
-const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
-  const { user } = useAuth()
-  return user ? <>{children}</> : <Navigate to="/login" replace />
-}
+// // Protected route wrapper
+// const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
+//   children,
+// }) => {
+//   const { user } = useAuth()
+//   return user ? <>{children}</> : <Navigate to="/login" replace />
+// }
 
 function App() {
   const { user, username, handleLogin } = useAuth()
@@ -81,21 +76,12 @@ function App() {
         <Route
           path="/rooms"
           element={
-            <ProtectedRoute>
-              <RoomSelection
-                username={username}
-                userId={user ? user.uid : ''}
-              />
-            </ProtectedRoute>
+            <RoomSelection username={username} userId={user ? user.uid : ''} />
           }
         />
         <Route
           path="/editor/:roomId"
-          element={
-            <ProtectedRoute>
-              <Editor username={username} />
-            </ProtectedRoute>
-          }
+          element={<Editor username={username} />}
         />
       </Routes>
     </Router>
