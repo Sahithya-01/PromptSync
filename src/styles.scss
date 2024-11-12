@@ -1,0 +1,300 @@
+@import './theme.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global styles */
+body {
+  margin: 0;
+  font-size: 14px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* App container */
+.App {
+  font-family: sans-serif;
+  text-align: center;
+}
+
+/* Theme Toggle positioning and styling */
+.theme-toggle {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1000;
+  background-color: transparent;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+}
+
+.theme-toggle .theme-toggle__classic {
+  height: 2rem; /* Adjusted size for better visibility */
+  width: 2rem;
+}
+
+.theme-toggle:hover {
+  opacity: 0.8;
+}
+
+/* Editor and Page styling */
+.editor-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 2rem;
+  background-color: var(--color-background);
+}
+
+.username-label {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+/* Section containers */
+.editor-section,
+.custom-prompt-container {
+  background-color: var(--color-card);
+  color: var(--color-text-primary);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Input and Text Areas */
+.editor-input,
+.custom-prompt-section input[type='text'] {
+  background-color: var(--color-card);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-secondary);
+  padding: 0.5rem;
+  border-radius: 4px;
+  transition: background-color 0.3s ease, color 0.3s ease,
+    border-color 0.3s ease;
+}
+
+.editor-placeholder {
+  color: var(--color-text-secondary);
+  position: absolute;
+  font-size: 15px;
+  pointer-events: none;
+}
+
+/* Buttons */
+button {
+  background-color: var(--color-primary);
+  color: var(--color-text-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+}
+
+button:hover:not(:disabled) {
+  opacity: 0.9;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-primary);
+}
+
+/* Toolbar styling */
+.toolbar {
+  display: flex;
+  justify-content: center;
+  background: var(--color-card);
+  padding: 4px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  vertical-align: middle;
+  transition: background-color 0.3s ease;
+}
+
+.toolbar button.toolbar-item {
+  border: 0;
+  display: flex;
+  background: none;
+  border-radius: 10px;
+  padding: 8px;
+  cursor: pointer;
+  vertical-align: middle;
+  transition: background-color 0.3s ease;
+}
+
+.toolbar button.toolbar-item.spaced {
+  margin-right: 2px;
+}
+
+.toolbar button.toolbar-item i.format {
+  background-size: contain;
+  display: inline-block;
+  height: 18px;
+  width: 18px;
+  margin-top: 2px;
+  opacity: 0.6;
+  color: var(--color-secondary);
+  transition: color 0.3s ease;
+}
+
+.toolbar button.toolbar-item:hover:not([disabled]) {
+  background-color: var(--color-secondary);
+}
+
+.toolbar button.toolbar-item.active {
+  background-color: var(--color-accent);
+}
+
+.toolbar .divider {
+  width: 1px;
+  background-color: var(--color-secondary);
+  margin: 0 4px;
+}
+
+.toolbar .toolbar-item .text {
+  display: flex;
+  line-height: 20px;
+  width: 200px;
+  font-size: 14px;
+  color: var(--color-secondary);
+  text-overflow: ellipsis;
+  overflow: hidden;
+  height: 20px;
+  text-align: left;
+  transition: color 0.3s ease;
+}
+
+/* Utility Classes */
+.w-full {
+  width: 100%;
+}
+
+.h-full {
+  height: 100%;
+}
+
+.mt-4 {
+  margin-top: 1rem;
+}
+
+.p-6 {
+  padding: 1.5rem;
+}
+.light {
+  /* Icons */
+  i.undo {
+    background-image: url(/icons/arrow-counterclockwise.svg);
+  }
+
+  i.redo {
+    background-image: url(/icons/arrow-clockwise.svg);
+  }
+  i.bold {
+    background-image: url(/icons/type-bold.svg);
+  }
+
+  i.italic {
+    background-image: url(/icons/type-italic.svg);
+  }
+
+  i.underline {
+    background-image: url(/icons/type-underline.svg);
+  }
+
+  i.strikethrough {
+    background-image: url(/icons/type-strikethrough.svg);
+  }
+
+  i.left-align {
+    background-image: url(/icons/text-left.svg);
+  }
+
+  i.center-align {
+    background-image: url(/icons/text-center.svg);
+  }
+
+  i.right-align {
+    background-image: url(/icons/text-right.svg);
+  }
+
+  i.justify-align {
+    background-image: url(/icons/justify.svg);
+  }
+}
+.dark {
+  i.undo {
+    background-image: url(/icons/arrow-counterclockwise2.svg);
+  }
+
+  i.redo {
+    background-image: url(/icons/arrow-clockwise2.svg);
+  }
+  i.bold {
+    background-image: url(/icons/type-bold2.svg);
+  }
+
+  i.italic {
+    background-image: url(/icons/type-italic2.svg);
+  }
+
+  i.underline {
+    background-image: url(/icons/type-underline2.svg);
+  }
+
+  i.strikethrough {
+    background-image: url(/icons/type-strikethrough2.svg);
+  }
+
+  i.left-align {
+    background-image: url(/icons/text-left2.svg);
+  }
+
+  i.center-align {
+    background-image: url(/icons/text-center2.svg);
+  }
+
+  i.right-align {
+    background-image: url(/icons/text-right2.svg);
+  }
+
+  i.justify-align {
+    background-image: url(/icons/justify2.svg);
+  }
+}
+
+/* Landing Page Styling Enhancements */
+section {
+  padding: 2rem 1rem;
+  max-width: 1200px;
+  margin: auto;
+}
+
+.text-highlight {
+  background: linear-gradient(135deg, #f59e0b, #fbbf24);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.bg-primary {
+  background-color: var(--color-primary);
+}
+
+.bg-accent {
+  background-color: var(--color-accent);
+}
+
+.text-accent {
+  color: var(--color-accent);
+}
+
+.text-secondary {
+  color: var(--color-secondary);
+}

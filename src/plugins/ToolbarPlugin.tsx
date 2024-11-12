@@ -19,7 +19,6 @@ import {
   UNDO_COMMAND,
 } from 'lexical'
 import { useCallback, useEffect, useRef, useState } from 'react'
-//import * as React from 'react';
 
 const LowPriority = 1
 

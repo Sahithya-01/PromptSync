@@ -15,11 +15,13 @@
     "@lexical/react": "^0.14.2",
     "@mui/icons-material": "^6.1.6",
     "@mui/material": "^6.1.6",
+    "@theme-toggles/react": "^4.1.0",
     "firebase": "^11.0.1",
     "lexical": "^0.14.2",
     "react": "^18.2.0",
     "react-color": "^2.19.3",
     "react-dom": "^18.2.0",
+    "react-icons": "^5.3.0",
     "react-router-dom": "^6.27.0",
     "y-webrtc": "^10.3.0",
     "y-websocket": "^2.0.2"
@@ -30,6 +32,10 @@
     "@types/react-color": "^3.0.12",
     "@types/react-dom": "^18.2.19",
     "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "sass": "^1.80.6",
+    "tailwindcss": "^3.4.14",
     "typescript": "^5.2.2",
     "vite": "^5.1.4"
   }

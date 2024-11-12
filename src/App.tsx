@@ -1,17 +1,28 @@
-import React, { useState } from 'react'
+import { User } from 'firebase/auth'
+import { useEffect, useState, createContext, useContext } from 'react'
 import {
+  Navigate,
+  Route,
   BrowserRouter as Router,
   Routes,
-  Route,
-  Navigate,
 } from 'react-router-dom'
-import { User } from 'firebase/auth' // Import User type from Firebase Auth
-import Register from './Register'
-import Login from './Login'
-import RoomSelection from './RoomSelection'
 import Editor from './Editor'
+import Login from './Login'
+import Register from './Register'
+import RoomSelection from './RoomSelection'
+import LandingPage from './LandingPage'
+import { auth } from './firebase' // Import your Firebase auth instance
 
-function App() {
+// Define context for user state
+interface AuthContextProps {
+  user: User | null
+  username: string | null
+  handleLogin: (loggedInUser: User, username: string) => void
+}
+
+const AuthContext = createContext<AuthContextProps | undefined>(undefined)
+
+const AuthProvider: React.FC<React.PropsWithChildren<{}>> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null)
   const [username, setUsername] = useState<string | null>(null)
 
@@ -20,21 +31,81 @@ function App() {
     setUsername(username)
   }
 
+  // Persist user authentication
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((firebaseUser) => {
+      if (firebaseUser) {
+        setUser(firebaseUser)
+        // Optionally, fetch the username from Firestore if not stored in auth
+      } else {
+        setUser(null)
+        setUsername(null)
+      }
+    })
+    return unsubscribe
+  }, [])
+
+  return (
+    <AuthContext.Provider value={{ user, username, handleLogin }}>
+      {children}
+    </AuthContext.Provider>
+  )
+}
+
+// Hook to use Auth Context
+const useAuth = () => {
+  const context = useContext(AuthContext)
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider')
+  }
+  return context
+}
+
+// Protected route wrapper
+const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const { user } = useAuth()
+  return user ? <>{children}</> : <Navigate to="/login" replace />
+}
+
+function App() {
+  const { user, username, handleLogin } = useAuth()
+
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Navigate to="/login" replace />} />{' '}
-        {/* Redirect "/" to "/login" */}
+        <Route path="/" element={<LandingPage />} /> {/* Landing Page */}
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login onLogin={handleLogin} />} />
-        <Route path="/rooms" element={<RoomSelection username={username} />} />
+        <Route
+          path="/rooms"
+          element={
+            <ProtectedRoute>
+              <RoomSelection
+                username={username}
+                userId={user ? user.uid : ''}
+              />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/editor/:roomId"
-          element={<Editor username={username} />}
+          element={
+            <ProtectedRoute>
+              <Editor username={username} />
+            </ProtectedRoute>
+          }
         />
       </Routes>
     </Router>
   )
 }
 
-export default App
+export default function AppWithProvider() {
+  return (
+    <AuthProvider>
+      <App />
+    </AuthProvider>
+  )
+}
