@@ -23,9 +23,9 @@ const ThemeToggle: React.FC = () => {
         duration={750}
         className="theme-toggle"
         color="black" // Default color prop to avoid missing properties
-        placeholder={undefined}
-        onPointerEnterCapture={undefined}
-        onPointerLeaveCapture={undefined}
+        placeholder=""
+        onPointerEnterCapture=""
+        onPointerLeaveCapture=""
       />
   
   )
