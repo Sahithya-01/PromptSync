@@ -116,7 +116,7 @@ const RoomSection: React.FC<{
       placeholder="Enter custom Room ID (optional)"
       value={inputValue}
       onChange={onInputChange}
-      className="w-full px-4 py-2 border border-gray-300 rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-primary"
+      className="w-full px-4 py-2 border mb-6 rounded-md bg-background text-textPrimary border-secondary focus:outline-none focus:ring-2 focus:ring-primary focus:bg-card"
     />
     <button
       onClick={onButtonClick}

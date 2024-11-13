@@ -1,3 +1,4 @@
+// src/Login.tsx
 import React, { useState } from 'react'
 import { signInWithEmailAndPassword, User } from 'firebase/auth'
 import { Link, useNavigate } from 'react-router-dom'
@@ -60,7 +61,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+            className="w-full px-4 py-2 border rounded-md bg-background text-textPrimary border-secondary focus:outline-none focus:ring-2 focus:ring-primary focus:bg-card"
           />
           <input
             type="password"
@@ -68,7 +69,7 @@ const Login: React.FC<LoginProps> = ({ onLogin }) => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+            className="w-full px-4 py-2 border rounded-md bg-background text-textPrimary border-secondary focus:outline-none focus:ring-2 focus:ring-primary focus:bg-card"
           />
           <button
             type="submit"

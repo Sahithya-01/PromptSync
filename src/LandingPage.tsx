@@ -1,5 +1,5 @@
 import React from 'react'
-import { FaUsers, FaRobot, FaRegComments } from 'react-icons/fa'
+import { FaRegComments, FaRobot, FaUsers } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 
 interface FeatureProps {
@@ -14,7 +14,7 @@ const LandingPage = () => {
   return (
     <div className="bg-background text-textPrimary min-h-screen flex flex-col items-center">
       {/* Hero Section */}
-      <section className="flex flex-col items-center justify-center bg-primary text-white py-16 px-6">
+      <section className="flex flex-col items-center mt-0 justify-center bg-primary text-white py-16 px-6">
         <h1 className="text-6xl font-bold mb-3 tracking-tight">
           <span className="text-accent">Prompt</span>Sync
         </h1>
@@ -29,7 +29,7 @@ const LandingPage = () => {
         <h2 className="text-3xl font-semibold mb-6">
           What Makes <span className="text-accent">PromptSync</span> Unique?
         </h2>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <Feature
             icon={<FaUsers className="text-4xl" />}

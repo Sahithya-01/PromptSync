@@ -46,7 +46,7 @@ const Register: React.FC<RegisterProps> = ({ onRegister }) => {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             required
-            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2"
+            className="w-full px-4 py-2 border rounded-md bg-background text-textPrimary border-secondary focus:outline-none focus:ring-2 focus:ring-primary focus:bg-card"
           />
           <input
             type="email"
@@ -54,7 +54,7 @@ const Register: React.FC<RegisterProps> = ({ onRegister }) => {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2"
+            className="w-full px-4 py-2 border rounded-md bg-background text-textPrimary border-secondary focus:outline-none focus:ring-2 focus:ring-primary focus:bg-card"
           />
           <input
             type="password"
@@ -62,7 +62,7 @@ const Register: React.FC<RegisterProps> = ({ onRegister }) => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2"
+            className="w-full px-4 py-2 border rounded-md bg-background text-textPrimary border-secondary focus:outline-none focus:ring-2 focus:ring-primary focus:bg-card"
           />
           <button
             type="submit"
