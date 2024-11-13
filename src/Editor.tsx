@@ -4,8 +4,8 @@ import { ContentEditable } from '@lexical/react/LexicalContentEditable'
 import LexicalErrorBoundary from '@lexical/react/LexicalErrorBoundary'
 import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin'
 import { Provider } from '@lexical/yjs'
-import { $createParagraphNode, $getRoot } from 'lexical'
-import React, { useState } from 'react'
+import { $createParagraphNode, $getRoot,$createTextNode } from 'lexical'
+import React, { useState,useEffect,useRef } from 'react'
 import { useLocation, useParams } from 'react-router-dom'
 import { WebsocketProvider } from 'y-websocket'
 import * as Y from 'yjs'
@@ -15,6 +15,7 @@ import ExampleTheme from './ExampleTheme'
 import PubNub from './PubNub'
 import ToolbarPlugin from './plugins/ToolbarPlugin'
 import CustomPrompt from './CustomPrompt'
+import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin'
 
 interface EditorProps {
   username: string | null
@@ -31,7 +32,7 @@ const editorConfig = {
 
 const pubnubConfig = {
   endpoint: import.meta.env.VITE_PUBNUB_ENDPOINT || '',
-  channel: '',
+  channel: editorConfig.namespace,
   auth: '',
   username: 'user-' + Math.random().toString(36).substr(2, 4),
   userId: 'user-id-' + Math.random().toString(36).substr(2, 9),
@@ -45,61 +46,56 @@ function initialEditorState(): void {
   root.append(paragraph)
 }
 
-const CaptureTextButton: React.FC<{ onTextChange: (text: string) => void }> = ({
-  onTextChange,
-}) => {
-  const [editor] = useLexicalComposerContext()
-
-  const handleCaptureText = () => {
-    editor.getEditorState().read(() => {
-      const root = $getRoot()
-      const textContent = root.getTextContent()
-      onTextChange(textContent)
-      editor.update(() => {}) // Trigger update for re-sync
-    })
-  }
-
-  return (
-    <button
-      onClick={handleCaptureText}
-      className="w-full py-2 px-4 bg-accent text-white rounded-md hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-primary"
-    >
-      Get Editor Text
-    </button>
-  )
-}
-
-const RefreshButton: React.FC = () => {
-  const handleRefresh = () => {
-    window.location.reload()
-  }
-
-  return (
-    <button
-      onClick={handleRefresh}
-      className="w-full py-2 px-4 bg-secondary text-white rounded-md hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-primary"
-    >
-      Refresh Editor
-    </button>
-  )
-}
-
-const Editor: React.FC<EditorProps> = () => {
+const Editor: React.FC<EditorProps> = React.memo(() => {
   const { roomId } = useParams<{ roomId: string }>()
   const location = useLocation()
-  const username = location.state?.username || 'Anonymous'
+  const initialUsername = location.state?.username || 'Anonymous'
 
   const [customPromptResult, setCustomPromptResult] = useState<string>('')
   const [editorText, setEditorText] = useState<string>('')
+  const providerRef = useRef<Provider | null>(null)
+  const username = useRef(initialUsername)
+
+  const handleEditorChange = (editorState: any) => {
+    editorState.read(() => {
+      const root = $getRoot()
+      const textContent = root.getTextContent()
+      setEditorText(textContent)
+      console.log('Current Editor Text:', textContent)
+    })
+  }
+
+  useEffect(() => {
+    if (!providerRef.current && roomId) {
+      const doc = new Y.Doc()
+      providerRef.current = new WebsocketProvider(
+        pubnubConfig.endpoint,
+        roomId,
+        doc,
+        {
+          WebSocketPolyfill: PubNub as unknown as typeof WebSocket,
+          params: {
+            ...pubnubConfig,
+            channel: roomId,
+          },
+        }
+      ) as unknown as Provider
+
+      // Clean up the provider when the component unmounts
+      return () => {
+        providerRef.current?.disconnect()
+        providerRef.current = null
+      }
+    }
+  }, [roomId])
 
   return (
     <div className="editor-page p-6 min-h-screen bg-background text-textPrimary">
       <div className="username-label mb-4 text-center">
-        <h2 className="text-xl font-semibold">{`Logged in as: ${username}`}</h2>
+        <h2 className="text-xl font-semibold">{`Logged in as: ${username.current}`}</h2>
       </div>
 
       <div className="flex w-full" style={{ height: '70vh' }}>
-        {/* Editor Section - 60% width */}
         <div className="editor-section bg-card p-6 rounded-lg shadow-md w-3/5 flex flex-col">
           <LexicalComposer initialConfig={editorConfig}>
             <ToolbarPlugin />
@@ -112,38 +108,36 @@ const Editor: React.FC<EditorProps> = () => {
                 ErrorBoundary={LexicalErrorBoundary}
               />
               <CollaborationPlugin
-                username={username}
+                username={username.current}
                 providerFactory={(id, yjsDocMap) => {
-                  const doc = new Y.Doc()
-                  yjsDocMap.set(id, doc)
-                  const provider = new WebsocketProvider(
-                    pubnubConfig.endpoint,
-                    roomId || 'default-room',
-                    doc,
-                    {
-                      WebSocketPolyfill: PubNub as unknown as typeof WebSocket,
-                      params: {
-                        ...pubnubConfig,
-                        channel: roomId || 'default-room',
-                      },
-                    }
-                  ) as unknown as Provider
-                  return provider
+                  if (!providerRef.current) {
+                    const doc = new Y.Doc()
+                    yjsDocMap.set(id, doc)
+                    providerRef.current = new WebsocketProvider(
+                      pubnubConfig.endpoint,
+                      roomId || 'default-room',
+                      doc,
+                      {
+                        WebSocketPolyfill:
+                          PubNub as unknown as typeof WebSocket,
+                        params: {
+                          ...pubnubConfig,
+                          channel: roomId || 'default-room',
+                        },
+                      }
+                    ) as unknown as Provider
+                  }
+                  return providerRef.current
                 }}
                 id="yjs-collaboration-plugin"
                 initialEditorState={initialEditorState}
                 shouldBootstrap={false}
               />
-            </div>
-            {/* Button Section below Editor - Full width */}
-            <div className="mt-4 flex space-x-4">
-              <CaptureTextButton onTextChange={setEditorText} />
-              <RefreshButton />
+              <OnChangePlugin onChange={handleEditorChange} />
             </div>
           </LexicalComposer>
         </div>
 
-        {/* Custom prompt Features Section - 40% width */}
         <div className="custom-prompt-container bg-card p-6 rounded-lg shadow-md w-2/5 ml-4">
           <CustomPrompt
             selectedText={editorText}
@@ -153,6 +147,6 @@ const Editor: React.FC<EditorProps> = () => {
       </div>
     </div>
   )
-}
+})
 
 export default Editor
