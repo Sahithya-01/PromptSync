@@ -88,65 +88,67 @@ const Editor: React.FC<EditorProps> = React.memo(() => {
       }
     }
   }, [roomId])
+return (
+  <div className="editor-page p-6 min-h-screen bg-background text-textPrimary">
+    <div className="username-label mb-4 text-center">
+      <h2 className="text-xl font-semibold">{`Logged in as: ${username.current}`}</h2>
+    </div>
 
-  return (
-    <div className="editor-page p-6 min-h-screen bg-background text-textPrimary">
-      <div className="username-label mb-4 text-center">
-        <h2 className="text-xl font-semibold">{`Logged in as: ${username.current}`}</h2>
+    <div className="flex flex-col lg:flex-row w-full lg:space-x-4 space-y-4 lg:space-y-0">
+      {/* Editor Section - Stacked vertically on smaller screens */}
+      <div className="editor-section bg-card p-6 rounded-lg shadow-md w-full lg:w-3/5 flex flex-col min-h-[70vh]">
+        <LexicalComposer initialConfig={editorConfig}>
+          <ToolbarPlugin />
+          <div className="editor-inner flex-grow overflow-y-auto h-[70vh]">
+            <RichTextPlugin
+              contentEditable={
+                <ContentEditable className="editor-input border p-4 rounded-md h-full max-h-[60vh] overflow-y-auto" />
+              }
+              placeholder={<span>Start typing...</span>}
+              ErrorBoundary={LexicalErrorBoundary}
+            />
+            <CollaborationPlugin
+              username={username.current}
+              providerFactory={(id, yjsDocMap) => {
+                if (!providerRef.current) {
+                  const doc = new Y.Doc()
+                  yjsDocMap.set(id, doc)
+                  providerRef.current = new WebsocketProvider(
+                    pubnubConfig.endpoint,
+                    roomId || 'default-room',
+                    doc,
+                    {
+                      WebSocketPolyfill: PubNub as unknown as typeof WebSocket,
+                      params: {
+                        ...pubnubConfig,
+                        channel: roomId || 'default-room',
+                      },
+                    }
+                  ) as unknown as Provider
+                }
+                return providerRef.current
+              }}
+              id="yjs-collaboration-plugin"
+              initialEditorState={initialEditorState}
+              shouldBootstrap={false}
+            />
+            <OnChangePlugin onChange={handleEditorChange} />
+          </div>
+        </LexicalComposer>
       </div>
 
-      <div className="flex w-full" style={{ height: '70vh' }}>
-        <div className="editor-section bg-card p-6 rounded-lg shadow-md w-3/5 flex flex-col">
-          <LexicalComposer initialConfig={editorConfig}>
-            <ToolbarPlugin />
-            <div className="editor-inner h-[70%]">
-              <RichTextPlugin
-                contentEditable={
-                  <ContentEditable className="editor-input border p-4 rounded-md h-4/5" />
-                }
-                placeholder={<span>Start typing...</span>}
-                ErrorBoundary={LexicalErrorBoundary}
-              />
-              <CollaborationPlugin
-                username={username.current}
-                providerFactory={(id, yjsDocMap) => {
-                  if (!providerRef.current) {
-                    const doc = new Y.Doc()
-                    yjsDocMap.set(id, doc)
-                    providerRef.current = new WebsocketProvider(
-                      pubnubConfig.endpoint,
-                      roomId || 'default-room',
-                      doc,
-                      {
-                        WebSocketPolyfill:
-                          PubNub as unknown as typeof WebSocket,
-                        params: {
-                          ...pubnubConfig,
-                          channel: roomId || 'default-room',
-                        },
-                      }
-                    ) as unknown as Provider
-                  }
-                  return providerRef.current
-                }}
-                id="yjs-collaboration-plugin"
-                initialEditorState={initialEditorState}
-                shouldBootstrap={false}
-              />
-              <OnChangePlugin onChange={handleEditorChange} />
-            </div>
-          </LexicalComposer>
-        </div>
-
-        <div className="custom-prompt-container bg-card p-6 rounded-lg shadow-md w-2/5 ml-4">
-          <CustomPrompt
-            selectedText={editorText}
-            onResult={(result) => setCustomPromptResult(result)}
-          />
-        </div>
+      {/* Custom Prompt Section - Stacked below editor on smaller screens */}
+      <div className="custom-prompt-container bg-card p-6 rounded-lg shadow-md w-full lg:w-2/5 min-h-[30vh] lg:min-h-[70vh] overflow-y-auto">
+        <CustomPrompt
+          selectedText={editorText}
+          onResult={(result) => setCustomPromptResult(result)}
+        />
       </div>
     </div>
-  )
+  </div>
+)
+
+
 })
 
 export default Editor

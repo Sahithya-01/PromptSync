@@ -109,15 +109,19 @@ button:focus {
 
 /* Toolbar styling */
 .toolbar {
-  display: flex;
-  justify-content: center;
-  background: var(--color-card);
-  padding: 4px;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
-  vertical-align: middle;
-  transition: background-color 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--color-card);
+    padding: 4px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    transition: background-color 0.3s ease;
+    overflow-x: auto; /* Allows horizontal scrolling if needed */
+    max-width: 100%; /* Ensures toolbar stays within editor width */
+    box-sizing: border-box;
 }
+
 
 .toolbar button.toolbar-item {
   border: 0;
