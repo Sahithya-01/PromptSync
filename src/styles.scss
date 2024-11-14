@@ -83,6 +83,37 @@ body {
   font-size: 15px;
   pointer-events: none;
 }
+.editor-text-bold {
+  font-weight: bold;
+}
+
+.editor-text-italic {
+  font-style: italic;
+}
+
+.editor-text-underline {
+  text-decoration: underline;
+}
+
+.editor-text-strikethrough {
+  text-decoration: line-through;
+}
+
+.editor-text-underlineStrikethrough {
+  text-decoration: underline line-through;
+}
+
+.editor-text-code {
+  background-color: rgb(240, 242, 245);
+  padding: 1px 0.25rem;
+  font-family: Menlo, Consolas, Monaco, monospace;
+  font-size: 94%;
+}
+
+.editor-link {
+  color: rgb(33, 111, 219);
+  text-decoration: none;
+}
 
 /* Buttons */
 button {
@@ -301,4 +332,38 @@ section {
 
 .text-secondary {
   color: var(--color-secondary);
+}
+
+.active-users {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.active-users ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+  margin-top: 8px;
+}
+
+.active-users li {
+  padding: 4px 8px;
+  background-color: var(--color-secondary);
+  color: var(--color-card);
+  border-radius: 4px;
+  font-size: 0.875rem; /* Adjust font size as needed */
+}
+
+
+.toolbar-item.active .format.underline {
+  text-decoration: underline;
+}
+
+
+.editor-inner {
+  background: #fff;
+  position: relative;
 }
