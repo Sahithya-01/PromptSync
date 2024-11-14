@@ -17,7 +17,7 @@ import {
   updateDoc,
   serverTimestamp,
   onSnapshot,
-  collection,
+  collection,getDoc
 } from 'firebase/firestore'
 
 import { OnChangePlugin } from '@lexical/react/LexicalOnChangePlugin'
@@ -87,22 +87,32 @@ const Editor: React.FC<EditorProps> = React.memo(() => {
     window.URL.revokeObjectURL(url)
   }
 
-  const addCollaboratorToFirestore = async () => {
-    if (!initialUsername) return // Do not add "Anonymous" users
+const addCollaboratorToFirestore = async () => {
+  if (!initialUsername) return // Avoid adding "Anonymous" users
 
-    const collaboratorRef = doc(
-      db,
-      'rooms',
-      roomId!,
-      'collaborators',
-      initialUsername
-    )
-    await setDoc(collaboratorRef, {
-      username: initialUsername,
-      userId: auth.currentUser?.uid,
-      lastActive: serverTimestamp(),
-    })
+  const collaboratorRef = doc(
+    db,
+    'rooms',
+    roomId!,
+    'collaborators',
+    initialUsername
+  )
+
+  try {
+    // Only set the document if it doesn’t already exist
+    await setDoc(
+      collaboratorRef,
+      {
+        username: initialUsername,
+        userId: auth.currentUser?.uid,
+        lastActive: serverTimestamp(),
+      },
+      { merge: true }
+    ) // Use merge to avoid overwriting if it exists
+  } catch (error) {
+    console.error('Error adding collaborator:', error)
   }
+}
 
 
   const removeCollaboratorFromFirestore = async () => {
@@ -115,26 +125,34 @@ const Editor: React.FC<EditorProps> = React.memo(() => {
     )
     await deleteDoc(collaboratorRef)
   }
+useEffect(() => {
+  addCollaboratorToFirestore()
 
-  useEffect(() => {
-    addCollaboratorToFirestore()
-
-    const interval = setInterval(async () => {
-      const collaboratorRef = doc(
-        db,
-        'rooms',
-        roomId!,
-        'collaborators',
-        initialUsername
-      )
-      await updateDoc(collaboratorRef, { lastActive: serverTimestamp() })
-    }, 10000) // Update every 10 seconds
-
-    return () => {
-      removeCollaboratorFromFirestore()
-      clearInterval(interval)
+  const interval = setInterval(async () => {
+    const collaboratorRef = doc(
+      db,
+      'rooms',
+      roomId!,
+      'collaborators',
+      initialUsername
+    )
+    try {
+      // Check if the document exists
+      const docSnap = await getDoc(collaboratorRef)
+      if (docSnap.exists()) {
+        await updateDoc(collaboratorRef, { lastActive: serverTimestamp() })
+      }
+    } catch (error) {
+      console.error("Error updating collaborator's lastActive:", error)
     }
-  }, [roomId, initialUsername])
+  }, 10000) // Update every 10 seconds
+
+  return () => {
+    removeCollaboratorFromFirestore()
+    clearInterval(interval)
+  }
+}, [roomId, initialUsername])
+
 
   useEffect(() => {
     const collaboratorsRef = collection(db, 'rooms', roomId!, 'collaborators')
