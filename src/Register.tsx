@@ -37,7 +37,7 @@ const Register: React.FC<RegisterProps> = ({ onRegister }) => {
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-background text-textPrimary">
-      <div className="w-full max-w-md p-8 space-y-4 bg-card shadow-lg rounded-lg">
+      <div className="w-full max-w-lg p-8 space-y-4 bg-card shadow-lg rounded-lg">
         <h2 className="text-3xl font-bold text-center">Register</h2>
         <form onSubmit={handleSubmit} className="space-y-6">
           <input

@@ -21,7 +21,7 @@ const ThemeToggle: React.FC = () => {
         toggled={isDarkMode}
         toggle={toggleTheme}
         duration={750}
-        className="theme-toggle"
+        className="theme-toggle text-accent"
         color="black" // Default color prop to avoid missing properties
         placeholder=""
         onPointerEnterCapture=""
