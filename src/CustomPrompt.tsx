@@ -41,18 +41,18 @@ const CustomPrompt: React.FC<CustomPromptProps> = ({
 
   return (
     <div className="custom-prompt-section">
-      <h3 className="text-xl font-semibold mb-4">Enter Custom Prompt</h3>
+      <h3 className="text-xl font-semibold mb-4">Ask any question</h3>
       <div className="flex items-center">
         <input
           type="text"
           value={customPrompt}
           onChange={(e) => setCustomPrompt(e.target.value)}
           placeholder="Enter a custom prompt"
-          className="w-full p-2 border rounded-l-md focus:outline-none focus:ring-2 focus:ring-primary"
+          className="w-full p-2 border rounded-l-md focus:outline-none focus:ring-2 focus:ring-primary mr-2"
         />
         <button
           onClick={handleFeatureSubmit}
-          className="p-2 bg-primary text-white rounded-r-md hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-primary"
+          className="p-2 bg-primary text-white rounded-full border focus:outline-none focus:ring-2 focus:ring-primary hover:bg-opacity-90  "
           disabled={loading}
         >
           {loading ? '...' : <FaArrowRight />}
