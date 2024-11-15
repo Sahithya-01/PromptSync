@@ -32,11 +32,23 @@ const CustomPrompt: React.FC<CustomPromptProps> = ({
       setResultText(responseText)
       onResult(responseText)
     } catch (error) {
-      console.error('Error performing cutom prompt:', error)
+      console.error('Error performing custom prompt:', error)
       setResultText('Error performing custom prompt feature.')
     } finally {
       setLoading(false)
     }
+  }
+
+  // Helper function to render the response with bold formatting
+  const formatText = (text: string) => {
+    const parts = text.split(/(\*\*[^*]+\*\*)/g) // Split on double asterisks
+    return parts.map((part, index) =>
+      part.startsWith('**') && part.endsWith('**') ? (
+        <strong key={index}>{part.slice(2, -2)}</strong>
+      ) : (
+        part
+      )
+    )
   }
 
   return (
@@ -52,7 +64,7 @@ const CustomPrompt: React.FC<CustomPromptProps> = ({
         />
         <button
           onClick={handleFeatureSubmit}
-          className="p-2 bg-primary text-white rounded-full border focus:outline-none focus:ring-2 focus:ring-primary hover:bg-opacity-90  "
+          className="p-2 bg-primary text-white rounded-full border focus:outline-none focus:ring-2 focus:ring-primary hover:bg-opacity-90"
           disabled={loading}
         >
           {loading ? '...' : <FaArrowRight />}
@@ -61,7 +73,7 @@ const CustomPrompt: React.FC<CustomPromptProps> = ({
 
       <div className="custom-prompt-result mt-4 overflow-y-auto">
         <h4>Result:</h4>
-        <p className="text-textSecondary">{resultText}</p>
+        <p className="text-textSecondary">{formatText(resultText)}</p>
       </div>
     </div>
   )
