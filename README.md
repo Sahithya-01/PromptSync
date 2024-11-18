@@ -130,9 +130,3 @@ Start the development server:
 - **Authentication Errors**: Users are informed of incorrect credentials on the login screen.
 - **Firestore Permissions**: Firestore rules restrict unauthorized data access. Ensure Firestore security rules are configured for your project.
 - **Connection Errors**: The WebSocket connection is checked to ensure real-time collaboration continuity, and users are alerted if disconnected.
-
-## Future Enhancements
-
-- **Customizable AI Models**: Integrate different models based on specific tasks (summarization, Q&A, etc.).
-- **Enhanced Presence Indicators**: Display presence indicators for each collaborator’s cursor position in the document.
-- **Expanded Role Management**: Assign user roles (e.g., admin, viewer, editor) for permission-based document access.
