@@ -1,3 +1,4 @@
+Link: https://promptsync.netlify.app/
 Demo: https://www.loom.com/share/4c26b1525a674bb8bd22a8dee3b2735a?sid=905ac361-1acb-42b0-9733-77db54ff7df4
 
 # PromptSync: Real-Time Collaborative Text Editor
